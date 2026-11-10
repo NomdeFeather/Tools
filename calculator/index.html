@@ -150,6 +150,7 @@
           <option value="charging">Battery or charging problem, not sure which (test)</option>
           <option value="suspension">Suspension noise (bumps/clunks)</option>
           <option value="belt">Unusual noise (belt/pulley)</option>
+          <option value="transmission">Transmission slipping, leaking or shifting late (diagnose)</option>
           <option value="dashcam">Dash cam install</option>
           <option value="ppi">Used car I'm thinking of buying (pre-purchase inspection)</option>
           <option value="mvi">Check-up for my car (multipoint inspection)</option>
@@ -314,7 +315,10 @@
     // Inspections: flat prices set by Feather 2026-10-06, an exception to MIN_LABOR.
     // Trip fee and mileage only beyond a 30-minute drive, at Feather's decision.
     ppi:        { label: "Pre-purchase inspection", flat: 59.99, shop: false, note: TRIP_NOTE },
-    mvi:        { label: "Multipoint vehicle inspection", flat: 99.99, shop: false, note: TRIP_NOTE }
+    mvi:        { label: "Multipoint vehicle inspection", flat: 99.99, shop: false, note: TRIP_NOTE },
+    // Transmission: diagnosis only, one-hour diagnostic (Feather, 2026-11-10). Rebuilds and replacements are referred out.
+    transmission: { label: "Transmission diagnostic", flat: 159.99, shop: false,
+                    note: "Diagnosis only: we find the cause and give you a written estimate. We don't rebuild or replace transmissions; if yours needs that, we'll refer you to a transmission shop." }
   };
 
   // ---- Proprietary vehicle complexity multipliers (Safe Travels' own judgment,
@@ -414,7 +418,7 @@
     "Mercury": "Milan:c,Sable:c,Grand Marquis:c,Mariner:s,Mountaineer:s",
     "Mini": "Cooper (Hardtop):c:2002-now,Clubman:c:2008-2024,Countryman:s:2011-now",
     "Mitsubishi": "Mirage:c:1990-2002|2014-2025,Lancer:c:2002-2017,Galant:c:1990-2012,Eclipse:c:1990-2012,Eclipse Cross:s:2018-now,Outlander Sport:s:2011-now,Outlander:s:2003-now,Outlander PHEV:s:2018-now",
-    "Nissan": "Versa:c:2007-now,Sentra:c:1990-now,Altima:c:1993-now,Maxima:c:1990-2023,Leaf:E:2011-now,Ariya:S:2023-now,350Z / 370Z:c:2003-2020,Z:c:2023-now,GT-R:c:2009-2024,Kicks:s:2018-now,Juke:s:2011-2017,Rogue Sport:s:2017-2022,Rogue:s:2008-now,Murano:s:2003-now,Pathfinder:s:1990-now,Xterra:s:2000-2015,Armada:s:2004-now,Quest:v:1993-2002|2004-2009|2011-2017,Frontier:t:1998-now,Titan:t:2004-2024,NV / NV200:v:2012-2021",
+    "Nissan": "Versa:c:2007-now,Versa Note:c:2014-2019,Sentra:c:1990-now,Altima:c:1993-now,Maxima:c:1990-2023,Leaf:E:2011-now,Ariya:S:2023-now,350Z / 370Z:c:2003-2020,Z:c:2023-now,GT-R:c:2009-2024,Kicks:s:2018-now,Juke:s:2011-2017,Rogue Sport:s:2017-2022,Rogue:s:2008-now,Murano:s:2003-now,Pathfinder:s:1990-now,Xterra:s:2000-2015,Armada:s:2004-now,Quest:v:1993-2002|2004-2009|2011-2017,Frontier:t:1998-now,Titan:t:2004-2024,NV / NV200:v:2012-2021",
     "Polestar": "Polestar 2:E:2021-now,Polestar 3:S:2025-now,Polestar 4:S:2025-now",
     "Pontiac": "Vibe:c,G6:c,Grand Prix:c,G8:c,Solstice:c,Torrent:s",
     "Porsche": "911:c:1990-now,718 Boxster / Cayman:c:1997-now,Panamera:c:2010-now,Taycan:E:2020-now,Macan:s:2015-now,Cayenne:s:2003-now",

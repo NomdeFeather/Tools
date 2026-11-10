@@ -341,6 +341,9 @@
   }
   .verdict-card.fix{ background: linear-gradient(160deg, #1B1E5C 0%, #3A3F86 100%); }
   .verdict-card.trade{ background: linear-gradient(160deg, #A83520 0%, #B93D26 100%); }
+  .verdict-card.close{ background: linear-gradient(160deg, #1F3A8A 0%, #2A4BA6 100%); }
+  .verdict-bottom{ margin:14px auto 0; max-width:520px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.35); font-weight:700; font-size:16px; line-height:1.45; }
+  .verdict-bottom:empty{ display:none; }
   .verdict-eyebrow{
     font-size:13px;
     font-weight:700;
@@ -656,10 +659,24 @@
       <p class="step-label">Step 3 of 5</p>
       <h2 class="step-title" tabindex="-1">What's it need right now?</h2>
 
-      <a class="cta-link" href="https://tools.besafetravels.com/calculator/" target="_blank" rel="noopener">
-        <span>Get a free repair quote from Safe Travels</span>
-        <span class="arrow" aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span>
+      <div class="field">
+        <label for="problem">What's the problem? <span style="font-weight:500;color:var(--text-muted);">(optional)</span></label>
+        <select id="problem">
+          <option value="">Not sure, or I'd rather not say</option>
+          <option value="engine">Engine</option>
+          <option value="transmission">Transmission</option>
+          <option value="brakes">Brakes or suspension</option>
+          <option value="electrical">Electrical, battery or starting</option>
+          <option value="body">Body or rust</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+
+      <a class="cta-link" id="quoteLink" href="https://tools.besafetravels.com/calculator/" target="_blank" rel="noopener">
+        <span id="quoteLinkText">Get a free repair quote from Safe Travels</span>
+        <span class="arrow" id="quoteLinkArrow" aria-hidden="true">↗</span><span class="sr-only" id="quoteLinkNewTab"> (opens in a new tab)</span>
       </a>
+      <p class="hint" id="quoteLinkHint" hidden></p>
 
       <label class="checkrow" for="noRepair">
         <input type="checkbox" id="noRepair">
@@ -671,6 +688,11 @@
         <input type="number" id="repairCost" inputmode="numeric" placeholder="e.g. 1800" min="0">
         <p class="hint">Use the quote from the link above, or your mechanic's estimate.</p>
       </div>
+      <fieldset class="opts" id="runsField">
+        <legend>Can you drive it normally right now?</legend>
+        <label class="opt"><input type="radio" name="runs" value="runs" checked><span><b>Yes, it drives normally</b><small>The repair can wait a little, or it's not a big one</small></span></label>
+        <label class="opt"><input type="radio" name="runs" value="needs"><span><b>No, it needs this repair first</b><small>A dealer would take it as is, with the problem</small></span></label>
+      </fieldset>
       <p class="error-msg" id="err2" role="alert">Enter the repair quote, or tick "No known repairs".</p>
 
       <div class="nav-buttons">
@@ -743,10 +765,22 @@
         </label>
       </div>
 
+      <div class="row2">
+        <div class="field">
+          <label for="newYear">Its model year <span style="font-weight:500;color:var(--text-muted);">(optional)</span></label>
+          <input type="number" id="newYear" inputmode="numeric" placeholder="e.g. 2017" min="1990" aria-describedby="newCarHint">
+        </div>
+        <div class="field">
+          <label for="newMiles">Its mileage <span style="font-weight:500;color:var(--text-muted);">(optional)</span></label>
+          <input type="number" id="newMiles" inputmode="numeric" placeholder="e.g. 110000" min="0" aria-describedby="newCarHint">
+        </div>
+      </div>
+      <p class="hint" id="newCarHint" style="margin-top:-8px;margin-bottom:18px;">An older car needs more upkeep and loses value more slowly. Leave these blank and we'll assume a car about 3 years old; for a brand-new car, enter this year.</p>
+
       <div class="slider-row">
-        <label for="horizon">How far ahead are you comparing?</label>
+        <label for="horizon">How far ahead are you comparing? <strong id="horizonOut" style="color:var(--navy-soft);">3 years</strong></label>
         <input type="range" id="horizon" min="12" max="84" step="6" value="36">
-        <div class="slider-value"><span>1 yr</span><span id="horizonOut">3 years</span><span>7 yrs</span></div>
+        <div class="slider-value"><span>1 yr</span><span>7 yrs</span></div>
       </div>
 
       <p class="error-msg" id="err3" role="alert">Enter a payment or a price to continue.</p>
@@ -768,26 +802,27 @@
         <p class="verdict-eyebrow" id="verdictEyebrow">OUR READ</p>
         <p class="verdict-headline" id="verdictHeadline">—</p>
         <p class="verdict-sub" id="verdictSub"></p>
+        <p class="verdict-bottom" id="bottomLine"></p>
       </div>
 
       <div class="stat-grid">
         <div class="stat">
-          <div class="k">Estimated trade-in value</div>
+          <div class="k" id="statTradeInK">Estimated trade-in value</div>
           <div class="v" id="statTradeIn">—</div>
           <div class="d" id="statTradeInConf"></div>
         </div>
         <div class="stat">
-          <div class="k">Repair as % of that value</div>
+          <div class="k">Repair as % of its value</div>
           <div class="v" id="statRatio">—</div>
-          <div class="d">lower is stronger for fixing</div>
+          <div class="d" id="statRatioSub">lower is stronger for fixing</div>
         </div>
         <div class="stat">
-          <div class="k">Cost to keep &amp; fix</div>
+          <div class="k" id="statFixK">Keep &amp; fix: spent over 3 years</div>
           <div class="v" id="statFixTotal">—</div>
           <div class="d" id="statFixSub"></div>
         </div>
         <div class="stat">
-          <div class="k">Net cost to trade in &amp; replace</div>
+          <div class="k" id="statTradeK">Trade in &amp; replace: spent over 3 years</div>
           <div class="v" id="statTradeTotal">—</div>
           <div class="d" id="statTradeSub"></div>
         </div>
@@ -971,7 +1006,7 @@
     "Mercedes-Benz": {f:0.85, m:"A-Class:lcar,CLA:lcar,C-Class:lcar,E-Class:lmid,CLS:lmid:1.1,S-Class:lmid:1.5,SL:perf,AMG GT:perf:1.4,GLA:lsuv:0.9,GLB:lsuv,GLK:lsuv,GLC:lsuv,M-Class / ML:lmsuv,GLE:lmsuv,GL:lmsuv,GLS:lfsuv,G-Class:lfsuv:2.5,EQB:evsuv,EQE:ev:2,EQS:ev:2.5,Metris:cvan,Sprinter:cvan:1.3"},
     "Mini": {f:0.8, m:"Cooper (Hardtop):sub:1.2,Clubman:car,Countryman:xsuv"},
     "Mitsubishi": {f:0.7, m:"Mirage:sub,Lancer:car,Galant:mid,Eclipse:sport:0.6,Eclipse Cross:xsuv,Outlander Sport:xsuv,Outlander:csuv,Outlander PHEV:csuv"},
-    "Nissan": {f:0.78, m:"Versa:sub,Sentra:car,Altima:mid,Maxima:full,Leaf:ev:0.6,Ariya:evsuv,350Z / 370Z:sport,Z:sport:1.6,GT-R:perf:1.8,Kicks:xsuv,Juke:xsuv,Rogue Sport:xsuv,Rogue:csuv,Murano:msuv,Pathfinder:msuv,Xterra:msuv,Armada:fsuv,Quest:van,Frontier:mtruck,Titan:ftruck,NV / NV200:cvan"},
+    "Nissan": {f:0.78, m:"Versa:sub,Versa Note:sub,Sentra:car,Altima:mid,Maxima:full,Leaf:ev:0.6,Ariya:evsuv,350Z / 370Z:sport,Z:sport:1.6,GT-R:perf:1.8,Kicks:xsuv,Juke:xsuv,Rogue Sport:xsuv,Rogue:csuv,Murano:msuv,Pathfinder:msuv,Xterra:msuv,Armada:fsuv,Quest:van,Frontier:mtruck,Titan:ftruck,NV / NV200:cvan"},
     "Polestar": {f:0.6, m:"Polestar 2:ev:2,Polestar 3:evsuv:2.2,Polestar 4:evsuv:2"},
     "Porsche": {f:1.2, m:"911:exotic,718 Boxster / Cayman:perf,Panamera:perf:1.2,Taycan:ev:3,Macan:lsuv:1.4,Cayenne:lmsuv:1.3"},
     "Ram": {f:0.95, m:"1500:ftruck,1500 Classic:ftruck,2500 / 3500:hd,ProMaster:cvan,ProMaster City:cvan:0.7"},
@@ -1029,6 +1064,16 @@
     var conf = (brand.old || seg==='exotic' || seg==='ev' || seg==='evsuv') ? 'Low' : 'Medium';
     return {low:mid*0.85, high:mid*1.15, conf:conf, seg:seg};
   }
+
+  // Feather, 2026-11-10 (test of the 2015 Versa Note with a failing CVT):
+  // A car that needs this repair before it can be driven trades in "as is": its running value minus the
+  // repair quote, never more than 55% off, never below about $500 (scrap).
+  var AS_IS_MAX_CUT = 0.55, AS_IS_FLOOR = 500;
+  // A repair this big is taken to replace a major part (engine or transmission): upkeep is 25% lower after it.
+  var MAJOR_REPAIR_FROM = 2500, MAJOR_REPAIR_UPKEEP = 0.75;
+  // The car being considered: blank year means about 3 years old.
+  var NEW_CAR_DEFAULT_AGE = 3;
+  function upkeepFor(age){ return clamp(70 + 9*Math.max(0, age-2), 70, 230); }
 
   var CONDITION = {
     excellent: {label:"Excellent", value:1.05, upkeep:0.9,  pts:-1},
@@ -1135,7 +1180,7 @@
     "Mercedes-Benz": "A-Class:2019-2022,CLA:2014-now,C-Class:1994-now,E-Class:1990-now,CLS:2006-2023,S-Class:1990-now,SL:1990-now,AMG GT:2016-now,GLA:2015-now,GLB:2020-now,GLK:2010-2015,GLC:2016-now,M-Class / ML:1998-2015,GLE:2016-now,GL:2007-2016,GLS:2017-now,G-Class:2002-now,EQB:2022-2025,EQE:2023-now,EQS:2022-now,Metris:2016-2023,Sprinter:2010-now",
     "Mini": "Cooper (Hardtop):2002-now,Clubman:2008-2024,Countryman:2011-now",
     "Mitsubishi": "Mirage:1990-2002|2014-2025,Lancer:2002-2017,Galant:1990-2012,Eclipse:1990-2012,Eclipse Cross:2018-now,Outlander Sport:2011-now,Outlander:2003-now,Outlander PHEV:2018-now",
-    "Nissan": "Versa:2007-now,Sentra:1990-now,Altima:1993-now,Maxima:1990-2023,Leaf:2011-now,Ariya:2023-now,350Z / 370Z:2003-2020,Z:2023-now,GT-R:2009-2024,Kicks:2018-now,Juke:2011-2017,Rogue Sport:2017-2022,Rogue:2008-now,Murano:2003-now,Pathfinder:1990-now,Xterra:2000-2015,Armada:2004-now,Quest:1993-2002|2004-2009|2011-2017,Frontier:1998-now,Titan:2004-2024,NV / NV200:2012-2021",
+    "Nissan": "Versa:2007-now,Versa Note:2014-2019,Sentra:1990-now,Altima:1993-now,Maxima:1990-2023,Leaf:2011-now,Ariya:2023-now,350Z / 370Z:2003-2020,Z:2023-now,GT-R:2009-2024,Kicks:2018-now,Juke:2011-2017,Rogue Sport:2017-2022,Rogue:2008-now,Murano:2003-now,Pathfinder:1990-now,Xterra:2000-2015,Armada:2004-now,Quest:1993-2002|2004-2009|2011-2017,Frontier:1998-now,Titan:2004-2024,NV / NV200:2012-2021",
     "Polestar": "Polestar 2:2021-now,Polestar 3:2025-now,Polestar 4:2025-now",
     "Porsche": "911:1990-now,718 Boxster / Cayman:1997-now,Panamera:2010-now,Taycan:2020-now,Macan:2015-now,Cayenne:2003-now",
     "Ram": "1500:1994-now,1500 Classic:2019-2024,2500 / 3500:1994-now,ProMaster:2014-now,ProMaster City:2015-2022",
@@ -1331,7 +1376,7 @@
     showStep(1);
   });
   $('back1').addEventListener('click', function(){ showStep(0); });
-  $('next1').addEventListener('click', function(){ showStep(2); });
+  $('next1').addEventListener('click', function(){ updateQuoteLink(); showStep(2); });
   $('back2').addEventListener('click', function(){ showStep(1); });
   $('next2').addEventListener('click', function(){
     var v = $('repairCost').value.trim();
@@ -1356,8 +1401,42 @@
   var repairField = $('repairField');
   noRepair.addEventListener('change', function(){
     repairField.style.display = noRepair.checked ? 'none' : 'block';
+    $('runsField').style.display = noRepair.checked ? 'none' : 'block';
     if(noRepair.checked) $('repairCost').value = 0;
   });
+
+  // Step 3's quote link depends on the problem (Feather, 2026-11-10): engine work and transmission
+  // rebuilds are referred out, so engine goes to a free phone consult, and transmission goes to the
+  // estimator's diagnostic line. The estimator is prefilled with the car from step 1.
+  var CALC_URL = 'https://tools.besafetravels.com/calculator/';
+  var PROBLEMS = {engine:'Engine', transmission:'Transmission', brakes:'Brakes or suspension',
+    electrical:'Electrical, battery or starting', body:'Body or rust', other:'Something else'};
+  function updateQuoteLink(){
+    var problem = $('problem').value, link = $('quoteLink'), hint = $('quoteLinkHint');
+    var phone = problem === 'engine';
+    $('quoteLinkArrow').hidden = phone; $('quoteLinkNewTab').hidden = phone;
+    if(phone){
+      link.href = 'tel:+19089863415'; link.removeAttribute('target');
+      $('quoteLinkText').textContent = 'Call (908) 986-3415 for a free phone consult';
+      hint.textContent = 'Engine work varies too much for an online estimate. Tell us what you\'re noticing and we\'ll give you our honest read.';
+      hint.hidden = false;
+      return;
+    }
+    var q = [];
+    if(problem === 'transmission') q.push('problem=transmission');
+    var y = parseInt($('year').value, 10);
+    if(y) q.push('year=' + y);
+    if(makeSel.value && makeSel.value !== '__other__'){
+      q.push('make=' + encodeURIComponent(makeSel.value));
+      if(modelSel.value) q.push('model=' + encodeURIComponent(modelSel.value));
+    }
+    link.href = CALC_URL + (q.length ? '?' + q.join('&') : '');
+    link.setAttribute('target', '_blank');
+    $('quoteLinkText').textContent = problem === 'transmission' ? 'Get a transmission diagnostic price from Safe Travels' : 'Get a free repair quote from Safe Travels';
+    hint.textContent = problem === 'transmission' ? 'We diagnose transmission problems. Rebuilds and replacements we refer to a transmission shop, so for the repair itself, use that shop\'s quote.' : '';
+    hint.hidden = problem !== 'transmission';
+  }
+  $('problem').addEventListener('change', updateQuoteLink);
 
   // payment/price toggle
   var tabPayment = $('tabPayment');
@@ -1423,6 +1502,9 @@
     noRepair.checked=false;
     $('err2').style.display='none';
     repairField.style.display='block';
+    $('runsField').style.display='block';
+    $('problem').value = '';
+    document.querySelector('input[name=runs][value=runs]').checked = true;
     $('paymentHasTrade').checked=false;
     $('applyTrade').checked=true;
     $('sendConsent').checked=false;
@@ -1434,6 +1516,7 @@
     refreshMakes(); makeSel.value = ''; categorySel.value = ''; refreshModels();
     horizonInput.value = 36; renderHorizon();
     tabPayment.click();
+    updateQuoteLink();
     showStep(0);
   });
 
@@ -1483,7 +1566,15 @@
 
     var finalLow = Math.max(300, low*scale*mileageFactor*conditionFactor);
     var finalHigh = Math.max(finalLow+200, high*scale*mileageFactor*conditionFactor);
-    var tradeMid = (finalLow+finalHigh)/2;
+    var tradeMid = (finalLow+finalHigh)/2; // what it's worth running (after the repair)
+
+    // ---- as is: needs this repair before it can be driven ----
+    var repairCostIn = noRepair.checked ? 0 : (parseFloat($('repairCost').value) || 0);
+    var needsFirst = repairCostIn>0 && document.querySelector('input[name=runs]:checked').value === 'needs';
+    var asIs = function(v){ return Math.max(AS_IS_FLOOR, v - Math.min(repairCostIn, v*AS_IS_MAX_CUT)); };
+    var asIsLow = needsFirst ? asIs(finalLow) : finalLow;
+    var asIsHigh = needsFirst ? Math.max(asIsLow+200, asIs(finalHigh)) : finalHigh;
+    var tradeValue = needsFirst ? (asIsLow+asIsHigh)/2 : tradeMid; // what a dealer would credit today
 
     var confOrder = ["High","Medium","Low"];
     var confIdx = confOrder.indexOf(conf);
@@ -1491,15 +1582,27 @@
     var finalConf = confOrder[confIdx];
 
     // ---- repair ----
-    var repairCost = noRepair.checked ? 0 : (parseFloat($('repairCost').value) || 0);
-    var ratio = tradeMid>0 ? (repairCost/tradeMid) : 0;
+    var repairCost = repairCostIn;
+    var ratio = tradeMid>0 ? (repairCost/tradeMid) : 0; // against its value once fixed
+    var problem = $('problem').value;
 
     // ---- keeping the current car ----
     var horizonMonths = parseInt(horizonInput.value,10);
-    var maintBase = clamp(70 + 9*Math.max(0, age-2), 70, 230);
+    var maintBase = upkeepFor(age);
     var swUpkeep = swCounts ? 20*swIssues.length : 0;
-    var maintMonthly = maintBase*cond.upkeep + rust.upkeep + swUpkeep;
-    var fixTotal = repairCost + maintMonthly*horizonMonths;
+    var majorRepair = repairCost >= MAJOR_REPAIR_FROM;
+    // Whole dollars, so "about $X/month" times the months matches the total shown.
+    var maintMonthly = Math.round((maintBase*cond.upkeep + rust.upkeep + swUpkeep) * (majorRepair ? MAJOR_REPAIR_UPKEEP : 1));
+    var keepUpkeep = maintMonthly*horizonMonths;
+    var fixTotal = repairCost + keepUpkeep;
+
+    // ---- the car being considered: its age drives its upkeep and how fast it loses value ----
+    var newYear = parseInt($('newYear').value, 10);
+    var newMiles = parseFloat($('newMiles').value) || 0;
+    var newAgeGiven = newYear >= 1990 && newYear <= currentYear + 1;
+    var newAge = newAgeGiven ? Math.max(0, currentYear - newYear) : NEW_CAR_DEFAULT_AGE;
+    var newUpkeepAge = Math.max(newAge, newMiles/12000); // high mileage counts like extra years
+    var newMaintMonthly = Math.round(upkeepFor(newUpkeepAge));
 
     // ---- trading in & replacing ----
     var monthlyPay, termMonths, cashDown, tradeCredit, tradeNote;
@@ -1508,7 +1611,7 @@
       termMonths = parseInt($('knownTerm').value,10) || horizonMonths;
       cashDown = parseFloat($('knownDown').value)||0;
       // If the payment doesn't already reflect the trade-in, the dealer's credit comes back to you.
-      tradeCredit = $('paymentHasTrade').checked ? 0 : tradeMid;
+      tradeCredit = $('paymentHasTrade').checked ? 0 : tradeValue;
       // If they gave a price and the payments can't cover it on their own, the trade-in must already be
       // inside the payment (or it's a lease): don't hand the trade-in back a second time.
       var givenPrice = parseFloat($('knownPrice').value)||0;
@@ -1521,7 +1624,7 @@
       cashDown = parseFloat($('down').value)||0;
       var apr = parseFloat($('apr').value)||0;
       termMonths = parseInt($('term').value,10) || horizonMonths;
-      tradeCredit = $('applyTrade').checked ? tradeMid : 0;
+      tradeCredit = $('applyTrade').checked ? tradeValue : 0;
       var principal = Math.max(0, price - cashDown - tradeCredit);
       var r = apr/100/12;
       monthlyPay = principal===0 ? 0 : (r===0 ? principal/termMonths : principal*r*Math.pow(1+r,termMonths)/(Math.pow(1+r,termMonths)-1));
@@ -1529,8 +1632,9 @@
     }
     var coveredMonths = Math.min(horizonMonths, termMonths);
     var paymentsTotal = monthlyPay*coveredMonths;
-    var afterTermUpkeep = horizonMonths>termMonths ? 40*(horizonMonths-termMonths) : 0; // light upkeep once paid off / lease ended
-    var tradeGross = cashDown + paymentsTotal + afterTermUpkeep;
+    // Upkeep on the car being considered, on the same curve as yours (good condition), for the whole comparison.
+    var newUpkeep = newMaintMonthly*horizonMonths;
+    var tradeGross = cashDown + paymentsTotal + newUpkeep;
     // In price mode the credit is already inside the loan; in payment mode subtract it here.
     var tradeTotal = mode==='payment' ? tradeGross - tradeCredit : tradeGross;
     if(mode==='price' && tradeCredit > price - cashDown) tradeTotal -= (tradeCredit - Math.max(0, price - cashDown));
@@ -1543,7 +1647,7 @@
     var newPrice = mode==='payment' ? (parseFloat($('knownPrice').value)||0) : price;
     var newValueLeft = 0, loanLeft = 0;
     if(newPrice > 0){
-      newValueLeft = newPrice * retentionFrac(years) / 100; // assumes it loses value like a new car
+      newValueLeft = newPrice * retentionFrac(newAge+years) / retentionFrac(newAge); // from its own age
       var paidMonths = Math.min(horizonMonths, termMonths);
       if(mode==='price'){
         var rr = apr/100/12, n = termMonths;
@@ -1568,21 +1672,42 @@
     points += cond.pts + rust.pts;
     if(swCounts && swIssues.length>=2) points+=1;
 
-    var isTrade = points>0;
+    // "Clearly" ahead: by $1,000 or more, or by 15% of the cost to keep (Feather, 2026-11-10).
+    var clearMargin = Math.min(1000, fixTotal*0.15);
+    var clearlyCheaper = diff<0 && -diff >= clearMargin;     // replacing clearly cheaper
+    var keepClearlyCheaper = diff>0 && diff >= clearMargin;   // keeping clearly cheaper
+    // Money wins (Feather, 2026-11-10): when keeping is clearly cheaper, the verdict is at most a close call,
+    // even if the repair is big next to the car's value.
+    var cappedByMoney = points>0 && keepClearlyCheaper;
+    var isTrade = points>0 && !cappedByMoney;
+    // Four tiers (handout item 6): fix, close call, lean trade, strongly trade.
+    var tier = points<0 ? 'fix' : (points===0 || cappedByMoney) ? 'close' : (ratio>0.6 && clearlyCheaper ? 'strong' : 'lean');
+    var headlineText = tier==='fix' ? 'Fix it' : tier==='close' ? 'Close call' : 'Trade it in';
 
     // ---- render ----
     var period = yearsText(horizonMonths);
-    $('statTradeIn').textContent = money(finalLow)+' – '+money(finalHigh);
-    $('statTradeInConf').textContent = finalConf+' confidence' + (isOther ? ' · category estimate' : '');
+    var newCarDesc = newAgeGiven ? (newAge===0 ? 'brand-new car' : newYear + ' car') : 'car about 3 years old (no year entered)';
+    $('statTradeInK').textContent = needsFirst ? 'Trade-in value as is' : 'Estimated trade-in value';
+    $('statTradeIn').textContent = money(asIsLow)+' – '+money(asIsHigh);
+    $('statTradeInConf').textContent = (needsFirst ? 'Once fixed: ' + money(finalLow) + ' – ' + money(finalHigh) + ' · ' : '')
+      + finalConf+' confidence' + (isOther ? ' · category estimate' : '');
     $('statRatio').textContent = tradeMid>0 ? Math.round(ratio*100)+'%' : '—';
+    $('statRatioSub').textContent = 'of its value once fixed (about ' + money(tradeMid) + '); lower is stronger for fixing';
+    $('statFixK').textContent = 'Keep & fix: spent over ' + period;
     $('statFixTotal').textContent = money(fixTotal);
-    $('statFixSub').textContent = 'repair + upkeep over ' + period + '. You\'d still own your car, worth about ' + money(keepValueLeft) + ' then';
+    $('statFixSub').textContent = 'repair + about ' + money(maintMonthly) + '/month upkeep. Your car is still worth about ' + money(keepValueLeft) + ' then, so it nets out to about ' + money(keepNet) + '.';
+    $('statTradeK').textContent = 'Trade in & replace: spent over ' + period;
     // A trade-in worth more than the payments would show a negative cost (F26): show $0 and say what's left over.
     $('statTradeTotal').textContent = money(Math.max(0, tradeTotal));
-    $('statTradeSub').textContent = 'over ' + period + ', ' + tradeNote + '. '
-      + (tradeTotal<0 ? 'Your trade-in covers these costs with about ' + money(-tradeTotal) + ' to spare. ' : '') + (newPrice>0
-      ? (newEquity>0 ? 'We estimate the newer car would be worth about ' + money(newEquity) + ' more than you still owe' : 'You\'d still owe about what the newer car is worth')
-      : 'Nothing counted for the newer car at the end (no price entered)');
+    $('statTradeSub').textContent = 'down payment, payments and about ' + money(newMaintMonthly) + '/month upkeep, ' + tradeNote + '. '
+      + (tradeTotal<0 ? 'Your trade-in covers these costs with about ' + money(-tradeTotal) + ' to spare. ' : '')
+      + (newPrice>0
+        ? (newEquity>0 ? 'The newer car is worth about ' + money(newEquity) + ' more than you\'d still owe then' : 'You\'d still owe about what the newer car is worth then')
+        : 'Nothing counted for the newer car at the end (no price entered)')
+      + ', so it nets out to about ' + money(tradeNet) + '.';
+    $('bottomLine').textContent = Math.abs(diff) < 250
+      ? 'Over ' + period + ', the two come out about even once each car\'s value at the end is counted.'
+      : (diff>=0 ? 'Keeping your car' : 'Replacing it') + ' comes out about ' + money(Math.abs(diff)) + ' ahead over ' + period + ', once each car\'s value at the end is counted.';
 
     var verdictCard = $('verdictCard');
     var headline = $('verdictHeadline');
@@ -1590,21 +1715,29 @@
     var resultCta = $('resultCta');
     var resultCtaText = $('resultCtaText');
 
+    headline.textContent = headlineText;
+    resultCta.href = 'https://www.besafetravels.com/appointments';
     if(isTrade){
       verdictCard.className = 'verdict-card trade';
-      headline.textContent = 'Trade it in';
       sub.textContent = rust.pts===2
         ? 'Structural rust changes the picture. It\'s a safety issue, and it\'s rarely worth putting big money into.'
+        : tier==='strong'
+        ? 'This repair costs more than 60% of what the car is worth once fixed, and replacing it comes out clearly ahead. Here, putting the money toward a newer car is the stronger move.'
+        : ratio>0.35 && diff>=0
+        ? 'Keeping costs about the same over ' + period + ', but this repair is ' + (ratio>=1 ? 'more than the car is worth' : 'a big share of what the car is worth') + ' once fixed. That tips it toward moving on.'
         : ratio>0.35
         ? 'The math leans toward moving on. Repairs and upkeep are eating into what this car is still worth.'
         : 'On these numbers, a newer car comes out ahead over ' + period + '. Before you decide, let us inspect it: if it still has good years left, keeping it running can still make sense.';
-      resultCta.href = 'https://www.besafetravels.com/appointments';
+      resultCtaText.textContent = 'Get a multipoint inspection first ($99.99)';
+    } else if(tier==='close'){
+      verdictCard.className = 'verdict-card close';
+      sub.textContent = cappedByMoney
+        ? 'Keeping your car comes out cheaper over ' + period + ', but this repair is ' + (ratio>=1 ? 'more than the car is worth' : 'a big share of what the car is worth') + ' once fixed. Before you put that money in, a multipoint inspection can show whether the rest of the car is in good shape.'
+        : 'The two options come out close. How much life your car has left should decide this one, and a multipoint inspection can tell you.';
       resultCtaText.textContent = 'Get a multipoint inspection first ($99.99)';
     } else {
       verdictCard.className = 'verdict-card fix';
-      headline.textContent = 'Fix it';
       sub.textContent = 'Keeping and repairing your current car looks like the stronger financial move right now.';
-      resultCta.href = 'https://www.besafetravels.com/appointments';
       resultCtaText.textContent = 'Book your repair with Safe Travels';
     }
 
@@ -1626,7 +1759,9 @@
 
     // reasoning bullets
     var reasons = [];
-    reasons.push('Your ' + carName + ' in ' + cond.label.toLowerCase() + ' condition is estimated to be worth ' + money(finalLow) + '–' + money(finalHigh) + ' at trade-in.');
+    reasons.push('Your ' + carName + ' in ' + cond.label.toLowerCase() + ' condition is estimated to be worth ' + money(finalLow) + '–' + money(finalHigh) + ' at trade-in' +
+      (needsFirst ? ' once it\'s fixed. Since it needs this repair first, a dealer would likely offer about ' + money(asIsLow) + '–' + money(asIsHigh) + ' as is.' : '.'));
+    if(problem) reasons.push('The problem: ' + PROBLEMS[problem].toLowerCase() + '.');
     if(rust.pts===2){
       reasons.push('Frame or brake-line rust lowers the value a lot, and it can make the car unsafe. Have it inspected before you pay for other repairs.');
     } else if(rust.pts===1){
@@ -1638,15 +1773,16 @@
         : 'Ongoing electronics or software problems can be costly to chase down out of warranty. We\'ve lowered the value and raised upkeep to reflect that. Check nhtsa.gov/recalls for free fixes.');
     }
     if(repairCost>0){
-      reasons.push('The ' + money(repairCost) + ' repair is about ' + Math.round(ratio*100) + '% of that estimated value.');
+      reasons.push('The ' + money(repairCost) + ' repair is about ' + Math.round(ratio*100) + '% of its value once fixed.');
     } else {
       reasons.push('You don\'t have a specific repair on the table right now, so this compares typical upkeep against replacing the car.');
     }
-    reasons.push('Keeping the car (repair + about ' + money(maintMonthly) + '/month upkeep) runs about ' + money(fixTotal) + ' over ' + period + '.');
+    reasons.push('Keeping the car (repair + about ' + money(maintMonthly) + '/month upkeep) runs about ' + money(fixTotal) + ' over ' + period + '.' +
+      (majorRepair ? ' A repair this size usually replaces a major part, so we\'ve counted upkeep 25% lower after it.' : ''));
     if(mode==='payment'){
-      reasons.push('Replacing it runs about ' + money(tradeGross) + ' in cash down and payments' + (tradeCredit>0 ? ', minus your trade-in\'s estimated value (' + money(tradeCredit) + '), for a net ' + money(tradeTotal) : '') + ' over the same period.');
+      reasons.push('Replacing it runs about ' + money(tradeGross) + ' in cash down, payments and about ' + money(newMaintMonthly) + '/month upkeep on a ' + newCarDesc + (tradeCredit>0 ? ', minus your trade-in\'s estimated value (' + money(tradeCredit) + '), for ' + money(tradeTotal) : '') + ' over the same period.');
     } else {
-      reasons.push('Replacing it runs about ' + money(tradeTotal) + ' over the same period (' + money(cashDown) + ' down + ' + money(monthlyPay) + '/month' + (tradeCredit>0 ? ', after your ' + money(tradeCredit) + ' trade-in lowers the loan' : '') + ').');
+      reasons.push('Replacing it runs about ' + money(tradeTotal) + ' over the same period (' + money(cashDown) + ' down + ' + money(monthlyPay) + '/month' + (tradeCredit>0 ? ', after your ' + money(tradeCredit) + ' trade-in lowers the loan' : '') + ', plus about ' + money(newMaintMonthly) + '/month upkeep on a ' + newCarDesc + ').');
     }
     reasons.push('At the end, you\'d still own your car, worth about ' + money(keepValueLeft) + '. ' + (newPrice>0
       ? 'We estimate the newer car would be worth about ' + money(newValueLeft) + (loanLeft>0 ? ', with about ' + money(loanLeft) + ' still owed on it' : '') + '.'
@@ -1677,13 +1813,16 @@
       ['Condition', cond.label],
       ['Rust', rust.label],
       ['Electronics / software', swIssues.length ? swIssues.join('; ') : 'No problems reported'],
+      ['Problem', problem ? PROBLEMS[problem] : 'Not given'],
       ['Repair quote', repairCost>0 ? money(repairCost) : 'None'],
+      ['Drives normally now', repairCost>0 ? (needsFirst ? 'No, needs this repair first' : 'Yes') : '—'],
       mode==='payment'
         ? ['New car', money(monthlyPay) + '/mo for ' + termMonths + ' mo, ' + money(cashDown) + ' down' + ($('paymentHasTrade').checked ? ', trade-in included' : '') + (newPrice>0 ? ', price ' + money(newPrice) : ', no price (lease or not given)')]
         : ['New car', money(parseFloat($('price').value)||0) + ' at ' + (parseFloat($('apr').value)||0) + '% for ' + termMonths + ' mo, ' + money(cashDown) + ' down' + (tradeCredit>0 ? ', trade-in applied' : '')],
+      ['Car considered', newAgeGiven ? newYear + (newMiles ? ', ' + newMiles.toLocaleString('en-US') + ' miles' : '') : 'Year not given (we assume about 3 years old)'],
       ['Comparing over', period]
     ];
-    if(swIssues.length) answers.splice(6, 0, ['Under warranty', {yes:'Yes', no:'No', unsure:'Not sure'}[warranty]]);
+    if(swIssues.length) answers.splice(6, 0, ['Under warranty', {yes:'Yes', no:'No', unsure:'Not sure'}[warranty]]); // after Electronics
     var al = $('answersList');
     al.innerHTML = '';
     answers.forEach(function(a){
@@ -1704,9 +1843,11 @@
       : 'We start from a typical trade-in value for an 8-year-old ' + makeSel.value + ' ' + modelSel.value + ' (our reference age)';
     mathTrade += (researched ? ', then adjust it' : ', then adjust it for your car\'s actual age (' + age + (age===1 ? ' year' : ' years') + '),') + ' for its mileage compared with about 12,000 miles a year, and for the condition and rust you reported' +
       (swIssues.length ? (swCounts ? ', plus the electronics problems (3% off for each)' : ' (the electronics problems don\'t lower it, since you said it\'s under warranty)') : '') +
-      '. The range shows how much cars like yours usually vary.';
+      '. The range shows how much cars like yours usually vary.' +
+      (needsFirst ? ' Because it needs this repair before it can be driven, a dealer takes it as is: we subtract the repair quote (' + money(repairCost) + '), but never more than 55% of the value and never below about $500, which gives ' + money(asIsLow) + '–' + money(asIsHigh) + '. That as-is value is what goes toward the newer car.' : '');
     var mathKeep = (repairCost>0 ? 'Your repair quote (' + money(repairCost) + ')' : 'No repair quote') +
-      ', plus about ' + money(maintMonthly) + ' a month in upkeep over ' + period + '. Upkeep starts at $70 a month, rises about $9 for each year of age past 2 (up to $230), and goes up for fair or poor condition, rust and out-of-warranty electronics problems.' +
+      ', plus about ' + money(maintMonthly) + ' a month in upkeep over ' + period + ' (' + money(keepUpkeep) + '). Upkeep starts at $70 a month, rises about $9 for each year of age past 2 (up to $230), and goes up for fair or poor condition, rust and out-of-warranty electronics problems.' +
+      (majorRepair ? ' A repair of ' + money(MAJOR_REPAIR_FROM) + ' or more usually replaces a major part such as an engine or transmission, so upkeep is counted 25% lower after it.' : '') +
       ' At the end you still own the car: we expect it to be worth about ' + money(keepValueLeft) + ' then (today\'s estimate, aged ' + period + ' along the same value curve), and count that in its favor.';
     var mathReplace;
     if(mode==='payment'){
@@ -1720,31 +1861,35 @@
         ', at ' + (apr||0) + '% APR over ' + termMonths + ' months (' + money(monthlyPay) + ' a month), for ' + coveredMonths + ' months of the comparison.' +
         (tradeCredit>0 ? '' : ' Your trade-in isn\'t applied, because you left that option off.');
     }
-    if(afterTermUpkeep>0) mathReplace += ' After the loan ends, we add about $40 a month for light upkeep on the newer car.';
+    mathReplace += ' Plus about ' + money(newMaintMonthly) + ' a month in upkeep over ' + period + ' (' + money(newUpkeep) + '), on the same curve as your car, for a ' + newCarDesc +
+      (newMiles && newMiles/12000 > newAge ? ' (its mileage counts like ' + (Math.round(newMiles/12000*10)/10) + ' years of age)' : '') + '.';
     mathReplace += newPrice>0
-      ? ' At the end you own the newer car: we expect it to be worth about ' + money(newValueLeft) + ' (assuming it loses value like a new car; a used one usually loses a little less)' +
+      ? ' At the end you own the newer car: we expect it to be worth about ' + money(newValueLeft) + ' (aged ' + period + ' from its own age along a typical value curve)' +
         (loanLeft>0 ? ', minus about ' + money(loanLeft) + ' still owed' : '') + ', and count that in its favor.'
       : ' You didn\'t enter the newer car\'s price, so we count nothing for it at the end, as with a lease. If you\'re buying, add the price for a fairer comparison.';
     mathReplace += ' Not included: sales tax, MVC title and registration fees, or insurance.';
-    var mathVerdict = 'The verdict weighs the repair against your car\'s value (a repair over about 35% of the value leans toward trading in, over 60% strongly), which option costs less over ' + period + ' once each car\'s value at the end is counted (' + (diff>=0 ? 'keeping' : 'replacing') + ' by about ' + money(Math.abs(diff)) + ')' +
+    var mathVerdict = 'The verdict weighs the repair against your car\'s value once fixed (a repair over about 35% of the value leans toward trading in, over 60% strongly), which option costs less over ' + period + ' once each car\'s value at the end is counted (' + (diff>=0 ? 'keeping' : 'replacing') + ' by about ' + money(Math.abs(diff)) + ')' +
       ', your car\'s age and mileage, and the condition, rust and electronics problems you reported.' +
-      (repairCost>0 ? '' : ' With no repair on the table, it leans toward keeping the car.');
+      (repairCost>0 ? '' : ' With no repair on the table, it leans toward keeping the car.') +
+      ' When these come out even, or when keeping is clearly cheaper (by $1,000 or more, or by 15% of the cost to keep) even though the repair is big next to the car\'s value, we call it a close call.';
     $('mathBody').innerHTML =
       '<p><strong>Trade-in estimate:</strong> ' + mathTrade + '</p>' +
-      '<p><strong>Cost to keep &amp; fix:</strong> ' + mathKeep + '</p>' +
-      '<p><strong>Net cost to trade in &amp; replace:</strong> ' + mathReplace + '</p>' +
+      '<p><strong>Keep &amp; fix:</strong> ' + mathKeep + '</p>' +
+      '<p><strong>Trade in &amp; replace:</strong> ' + mathReplace + '</p>' +
       '<p><strong>The verdict:</strong> ' + mathVerdict + '</p>' +
       '<p>Every real car differs by condition, region, and trim. Treat this as a starting point for the conversation, not a final number.</p>';
 
     $('printDate').textContent = 'Prepared ' + new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) + ' at besafetravels.com';
 
     lastResult = {
-      verdict: isTrade ? 'Trade it in' : 'Fix it',
+      verdict: isTrade ? 'Trade it in' : 'Fix it', // the receiver accepts only these two
+      headline: headlineText + (tier==='strong' ? ' (strongly)' : ''),
+      bottomLine: $('bottomLine').textContent,
       answers: answers,
-      tradeInRange: money(finalLow) + ' – ' + money(finalHigh) + ' (' + finalConf + ' confidence)',
+      tradeInRange: money(finalLow) + ' – ' + money(finalHigh) + ' once fixed (' + finalConf + ' confidence)' + (needsFirst ? '; as is ' + money(asIsLow) + ' – ' + money(asIsHigh) : ''),
       repairRatio: tradeMid>0 ? Math.round(ratio*100)+'%' : '—',
-      keepCost: money(fixTotal),
-      tradeCost: money(tradeTotal),
+      keepCost: money(fixTotal) + ' spent over ' + period + ', nets out to ' + money(keepNet),
+      tradeCost: money(tradeTotal) + ' spent over ' + period + ', nets out to ' + money(tradeNet),
       keepValueLeft: money(keepValueLeft),
       newEquity: newPrice>0 ? money(newEquity) : 'not counted (no price)',
       netAhead: (diff>=0 ? 'Keeping' : 'Replacing') + ' by about ' + money(Math.abs(diff)),
@@ -1818,11 +1963,12 @@
     lines.push('Phone: ' + (contact.phone || '—'));
     if(contact.note) lines.push('Note: ' + contact.note);
     lines.push('');
-    lines.push('RESULT: ' + r.verdict);
+    lines.push('RESULT: ' + r.headline);
+    lines.push(r.bottomLine);
     lines.push('Trade-in estimate: ' + r.tradeInRange);
     lines.push('Repair as % of value: ' + r.repairRatio);
-    lines.push('Cost to keep & fix: ' + r.keepCost);
-    lines.push('Net cost to trade in & replace: ' + r.tradeCost);
+    lines.push('Keep & fix: ' + r.keepCost);
+    lines.push('Trade in & replace: ' + r.tradeCost);
     lines.push('Current car still worth at the end: ' + r.keepValueLeft);
     lines.push('Newer car equity at the end: ' + r.newEquity);
     lines.push('Comes out ahead: ' + r.netAhead);
