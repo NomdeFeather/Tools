@@ -231,6 +231,7 @@
           <p id="st-vehicle-note" hidden></p>
         </div>
         <p class="trade-link" id="st-trade-link" hidden>Big repair on an older car? Our free tool compares fixing it with trading it in: <a href="https://tools.besafetravels.com/fix-or-trade/" target="_blank" rel="noopener">Fix it, or trade it in?<span class="sr-only"> (opens in a new tab)</span></a></p>
+        <p class="legal" id="st-mileage">Prices assume a location within about a 30-minute drive of Port Monmouth. Beyond that, mileage is charged at $1 per mile, round trip, from Port Monmouth.</p>
         <p class="legal">Ballpark estimate for planning purposes. Your official written estimate, as required under New Jersey law, is provided before any work begins. Diagnostic fees are credited toward the repair if you move forward.</p>
       </div>
       <!-- One short announcement per change, so screen readers aren't flooded while typing. -->
@@ -261,7 +262,7 @@
           <label for="st-website">Leave this empty</label>
           <input type="text" id="st-website" tabindex="-1" autocomplete="off">
         </div>
-        <p class="legal">By sending this, you agree Safe Travels may call or text you about your request. Message and data rates may apply. Reply STOP to opt out.</p>
+        <p class="legal">By sending this, you agree that Safe Travels Mobile Repair may call or text you about your request. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. See our <a href="https://besafetravels.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy<span class="sr-only"> (opens in a new tab)</span></a>.</p>
         <button type="submit" id="st-book">Send my request</button>
         <p class="msg error" id="st-submit-error" role="alert" hidden></p>
         <p class="legal">Sending this doesn't book a binding appointment. We'll call to confirm.</p>
@@ -277,6 +278,7 @@
   <p><strong>Safe Travels Mobile Repair</strong> · Port Monmouth, NJ · <a href="tel:+19089863415">(908) 986-3415</a> · <a href="mailto:info@besafetravels.com">info@besafetravels.com</a></p>
   <p>Calls 7am–8pm. On-site visits 8:30am–5pm, Mon–Sat. Closed Sunday.</p>
   <p><a href="https://besafetravels.com/">Back to besafetravels.com</a></p>
+  <p>&copy; 2026 Be Safe Travels LLC, doing business as Safe Travels Mobile Repair · <a href="https://besafetravels.com/privacy-policy">Privacy Policy</a></p>
 </footer>
 
 <script>
@@ -296,7 +298,8 @@
   var SUBMIT_TIMEOUT_MS = 20000;
   var PAGE_OPENED = Date.now();
 
-  var TRIP_NOTE = "Trip fee and mileage may apply for locations more than a 30-minute drive away.";
+  // Mileage ($1/mile beyond 30 minutes) is stated under every estimate (attorney item 9, 2026-11-16).
+  var TRIP_NOTE = "A trip fee may apply for locations more than a 30-minute drive away, in addition to the mileage below.";
   var DATA = {
     // partsLow/partsHigh: typical parts cost, added after the vehicle multiplier (which only scales labor hours)
     brakes:     { label: "Brake pads (one axle)", hoursLow: 1, hoursHigh: 1.5, partsLow: 60, partsHigh: 150, shop: false },

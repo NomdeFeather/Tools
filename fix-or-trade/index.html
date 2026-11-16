@@ -508,6 +508,10 @@
   .send-status.bad{ color: var(--error); display:block; }
   .send-box button.primary{ width:100%; margin-bottom:14px; }
 
+  .estimate-note{ text-align:center; font-size:14px; color: var(--text-body); margin:-8px 0 18px; }
+  .site-foot{ text-align:center; font-size:13px; color: var(--navy-soft); padding:18px 8px 28px; }
+  .site-foot p{ margin:4px 0; }
+  .site-foot a{ color: var(--navy-soft); font-weight:600; }
   .disclaimer h3{ font-size:12.5px; font-weight:700; color: var(--text-body); margin:14px 0 4px; }
   .disclaimer p{ margin:0 0 8px; }
   .print-only{ display:none; }
@@ -594,11 +598,6 @@
         <label for="category">Closest category</label>
         <select id="category"></select>
         <p class="hint">We don't have your exact model in our reference data, so we'll use a same-category estimate. It'll be wider and less precise.</p>
-      </div>
-
-      <div class="field">
-        <label for="platevin">VIN or plate <span style="font-weight:500;color:var(--text-muted);">(optional, not used in the estimate)</span></label>
-        <input type="text" id="platevin" placeholder="Optional">
       </div>
 
       <p class="error-msg" id="err0" role="alert">Enter a model year and mileage to continue.</p>
@@ -804,6 +803,7 @@
         <p class="verdict-sub" id="verdictSub"></p>
         <p class="verdict-bottom" id="bottomLine"></p>
       </div>
+      <p class="estimate-note">These are rough estimates to compare options, not financial advice or an offer. See the details below.</p>
 
       <div class="stat-grid">
         <div class="stat">
@@ -874,7 +874,7 @@
         </div>
         <label class="checkrow" for="sendConsent">
           <input type="checkbox" id="sendConsent">
-          <span>I agree that Safe Travels Mobile Repair can use my answers and contact details to reply to me about this estimate.</span>
+          <span>I agree that Safe Travels Mobile Repair can use my answers and contact details to reply to me about this estimate, and may call or text me about it. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. See our <a href="https://besafetravels.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy<span class="sr-only"> (opens in a new tab)</span></a>.</span>
         </label>
         <p class="send-status" id="sendStatus" role="status"></p>
         <button class="primary" type="submit" id="sendBtn">Send my results to Safe Travels</button>
@@ -906,6 +906,10 @@
     </div>
 
   </div>
+  <footer class="site-foot">
+    <p>Safe Travels Mobile Repair · Port Monmouth, NJ · <a href="tel:+19089863415">(908) 986-3415</a> · <a href="mailto:info@besafetravels.com">info@besafetravels.com</a></p>
+    <p>&copy; 2026 Be Safe Travels LLC, doing business as Safe Travels Mobile Repair · <a href="https://besafetravels.com/privacy-policy">Privacy Policy</a></p>
+  </footer>
 </div>
 
 <script>
@@ -1028,7 +1032,7 @@
     "Suzuki": {f:0.55, old:true, m:"SX4:car,Kizashi:mid,Grand Vitara:csuv"}
   };
 
-  // Hand-researched ranges that take priority over the segment model: KBB trade-in (low) to
+  // Hand-researched ranges that take priority over the segment model: trade-in (low) to
   // private-party (high), Good condition, from Feather's valuation reference CSV (updated 2026-10-16;
   // 2018 rows from 2026-09-15). Each row: model year -> [low, high, confidence]. Typical mileage behind
   // each year: 2016 ~100-120k, 2018 ~70-90k, 2020 ~50-65k, 2022 ~30-45k, 2024 ~10-25k.
@@ -1088,7 +1092,7 @@
     structural: {label:"Frame, subframe, or brake-line rust", value:0.6, upkeep:80, pts:2}
   };
 
-  // % of new value kept by age. After 15 years values keep falling 14% a year (F26, KBB 2026-10:
+  // % of new value kept by age. After 15 years values keep falling 14% a year (F26, 2026-10:
   // a 1995 Camry trades in for a few hundred dollars). lux: luxury segments of brands that lose value
   // fast (brand factor under 1) lose another 7% a year after 12 years (a 2000 Jaguar XJ8: $100–800).
   // F28 (2026-10-16 valuation CSV): a 6-year-old car is worth about 1.47x an 8-year-old one (was 1.22x),
@@ -1737,7 +1741,7 @@
       resultCtaText.textContent = 'Get a multipoint inspection first ($99.99)';
     } else {
       verdictCard.className = 'verdict-card fix';
-      sub.textContent = 'Keeping and repairing your current car looks like the stronger financial move right now.';
+      sub.textContent = 'On these estimates, keeping and repairing your current car comes out ahead.';
       resultCtaText.textContent = 'Book your repair with Safe Travels';
     }
 
@@ -1809,7 +1813,6 @@
     var answers = [
       ['Car', carName],
       ['Mileage', mileage.toLocaleString('en-US')],
-      ['VIN / plate', $('platevin').value.trim() || '—'],
       ['Condition', cond.label],
       ['Rust', rust.label],
       ['Electronics / software', swIssues.length ? swIssues.join('; ') : 'No problems reported'],
